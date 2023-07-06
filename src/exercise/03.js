@@ -30,6 +30,8 @@ function Menu({
     </ul>
   )
 }
+
+Menu = React.memo(Menu)
 // 🐨 Memoize the Menu here using React.memo
 
 function ListItem({
@@ -57,12 +59,25 @@ function ListItem({
   )
 }
 // 🐨 Memoize the ListItem here using React.memo
+ ListItem = React.memo(ListItem,(prevProps,nextProps)=>{
+  if(prevProps.getItemProps !== nextProps.getItemProps) return false
+  if(prevProps.item !== nextProps.item) return false
+  if(prevProps.index !== nextProps.index) return false
+  if(prevProps.highlightedIndex !== nextProps.highlightedIndex) return false
+
+  if(prevProps.highlightedIndex !== nextProps.highlightedIndex){
+    const wasPrevHighligthed = prevProps.highlightedIndex === prevProps.index;
+    const isNowHigligthed = nextProps.highlightedIndex === nextProps.index;
+    return wasPrevHighligthed === isNowHigligthed
+  }
+  return true 
+ })
 
 function App() {
   const forceRerender = useForceRerender()
   const [inputValue, setInputValue] = React.useState('')
-
   const {data: allItems, run} = useAsync({data: [], status: 'pending'})
+
   React.useEffect(() => {
     run(getItems(inputValue))
   }, [inputValue, run])
